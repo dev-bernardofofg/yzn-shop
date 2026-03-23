@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm info:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npm install:*)",
+      "Skill(update-config)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(npx shadcn@latest init --defaults --yes)"
+    ]
+  }
+}
