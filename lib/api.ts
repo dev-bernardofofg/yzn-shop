@@ -19,8 +19,12 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem(STORAGE_KEYS.token)
+    const isTokenError =
+      error.response?.status === 401 ||
+      error.response?.data?.error?.message === "Token not provided"
+
+    if (isTokenError && typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:logout"))
     }
     return Promise.reject(error)
   }

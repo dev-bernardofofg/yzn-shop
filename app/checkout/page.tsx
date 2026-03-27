@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useCart } from "@/contexts/CartContext"
-import { useAuth } from "@/contexts/AuthContext"
 import { useCreateOrder } from "@/generated/hooks/useCreateOrder"
 import { useCreateCheckout } from "@/generated/hooks/useCreateCheckout"
 import { useGetCouponByCode } from "@/generated/hooks/useGetCouponByCode"
@@ -29,21 +28,16 @@ const FALLBACK_IMAGE =
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, totalPrice, clearCart, removeFromCart } = useCart()
-  const { isAuthenticated } = useAuth()
 
   const [couponInput, setCouponInput] = useState("")
   const [appliedCode, setAppliedCode] = useState("")
   const [orderError, setOrderError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login")
-      return
-    }
     if (items.length === 0) {
       router.replace("/")
     }
-  }, [isAuthenticated, items.length, router])
+  }, [items.length, router])
 
   const couponQuery = useGetCouponByCode(appliedCode)
   const createOrder = useCreateOrder()
@@ -117,7 +111,7 @@ export default function CheckoutPage() {
   const isProcessing = createOrder.isPending || createCheckout.isPending
   const totalItems = items.reduce((acc, i) => acc + i.quantity, 0)
 
-  if (!isAuthenticated || items.length === 0) return null
+  if (items.length === 0) return null
 
   return (
     <motion.div

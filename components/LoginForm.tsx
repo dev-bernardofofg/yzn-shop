@@ -7,7 +7,7 @@ import { FormInput } from "@/components/form/FormInput"
 import { Button } from "@/components/ui/button"
 import { useLogin } from "@/generated/index"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
 import { getApiError } from "@/lib/utils"
 
@@ -19,7 +19,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/"
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -37,7 +38,7 @@ export function LoginForm() {
       {
         onSuccess: (res) => {
           if (res.data?.token && res.data?.user) {
-            login(res.data.token, res.data.user)
+            login(res.data.token, res.data.user, redirectTo)
           }
         },
       }
