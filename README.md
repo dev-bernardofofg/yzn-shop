@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YznStore — Frontend
+
+E-commerce storefront built with Next.js 16, React 19, and TypeScript. Integrates with a REST API via auto-generated hooks (Kubb + React Query).
+
+## Features
+
+**Storefront**
+- Product catalog with search and category filters
+- Product detail page with reviews
+- Shopping cart with local persistence
+- Checkout with coupon support (percentage and fixed discount)
+- Payment gateway redirect and success confirmation
+- Order history and order details
+
+**Auth**
+- Register, login, logout
+- Forgot/reset password and email verification
+- Role-based access control (admin vs. customer)
+- Auto-logout on expired token
+
+**Admin Panel**
+- Product management (create, edit, deactivate)
+- Order management with status updates
+- Coupon management (usage limits, expiration)
+- User management
+
+## Tech Stack
+
+| Category | Library |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 |
+| Data fetching | TanStack React Query 5 |
+| Forms | React Hook Form + Zod |
+| API codegen | Kubb (OpenAPI → types + hooks) |
+| HTTP client | Axios |
+| Animations | Framer Motion |
+| Icons | Lucide React |
+| Input masks | iMask / react-imask |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- Backend API running (see `NEXT_PUBLIC_API_URL` below)
+
+### Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Configure environment
+echo "NEXT_PUBLIC_API_URL=http://localhost:3000" > .env
+
+# Start dev server (runs on port 3001)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Description | Default |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:3000` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Regenerating API code
 
-## Learn More
+The `/generated` directory contains types, Axios clients, and React Query hooks auto-generated from the backend's OpenAPI spec. To regenerate:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run generate
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> Requires the backend to be running at `NEXT_PUBLIC_API_URL`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+app/                   # Next.js App Router pages
+  (auth)/              # Login, register, password reset
+  admin/               # Admin panel (products, orders, coupons, users)
+  orders/              # Order history and detail
+  products/            # Product catalog and detail
+  checkout/            # Checkout page
+components/
+  admin/               # Admin-specific components
+  form/                # Form inputs (with CPF and currency masks)
+  ui/                  # Base UI primitives
+contexts/              # AuthContext, CartContext
+generated/             # Auto-generated API code (do not edit manually)
+lib/                   # Utilities and helpers
+proxy.ts               # Next.js middleware (route protection)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Routes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route | Access |
+|---|---|
+| `/` | Public |
+| `/products`, `/products/[id]` | Public |
+| `/login`, `/register`, `/forgot-password` | Public (redirects if logged in) |
+| `/checkout`, `/orders`, `/orders/[id]` | Authenticated |
+| `/admin/*` | Admin only |
